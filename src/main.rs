@@ -119,9 +119,11 @@ impl EventHandler for Handler {
 #[tokio::main]
 async fn main() {
   let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
-
   let machine_name = env::var("MACHINE_NAME")
     .expect("Expected a machine instance name in the environment");
+  let gce_json_key_path = env::var("GCE_JSON_KEY_FILE_PATH")
+    .expect("Expected a path to the gce key file in the environment");
+
   let framework = StandardFramework::new()
     .configure(|c| c
       .with_whitespace(true)
@@ -153,7 +155,8 @@ async fn main() {
   {
 
     // json account key to access gce.
-    let secret: ServiceAccountKey = yup_oauth2::read_service_account_key(Path::new("gcp-key.json")).await.unwrap();
+    let secret: ServiceAccountKey = yup_oauth2::read_service_account_key(
+      Path::new(gce_json_key_path.as_str())).await.unwrap();
     let auth = yup_oauth2::ServiceAccountAuthenticator::builder(secret,).build().await.unwrap();
 
     // Open the data lock in write mode, so keys can be inserted to it.

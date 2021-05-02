@@ -1,0 +1,37 @@
+# Maintainer: Alejandro Valdes <alejandrovaldes at live dot com>
+
+_name=discord-google-cloud-engine-bot
+pkgname=${_name}-git
+pkgver=0.1.0
+pkgrel=1
+arch=('x86_64' 'aarch64' 'armv7h')
+url="https://github.com/alevalv/discord-google-cloud-engine-bot"
+makedepends=('rust' 'cargo' 'git' 'pkgconf')
+source=("git+${url}"
+        systemd.service
+        env.sh
+        gce_key.json)
+sha512sums=('SKIP'
+            '5176ece956533b78626c5af4ec2474cd9e4f46cfd745ec80a6ff8bdde6a7daeb19a709a342ba69582043a10c1170e719a8df4260ab96962a8c085badbef26b60'
+            'db4d9077508dc12710be5b3e8dd3928f7e5a3bb4008162ed9dda9cdab6d806f6b5271516b58ca6c233f52a1335a201d3d0bafdd3fd4ad0eb74ddd52a49ce7c75'
+            '62b9e2b76efc377354c1b55773c797d9848633c7ac1a570e079c52bf62c7a736825ae9dc47941aa67ed710600517356eb66748497d64c1ddad6483df8d6e2b89')
+backup=('etc/discord-google-cloud-engine-bot/env.sh'
+       'etc/discord-google-cloud-engine-bot/gce_key.json')
+
+prepare() {
+  cd "${srcdir}/${_name}"
+  cargo fetch --locked
+}
+
+build() {
+  return 0
+}
+
+package() {
+  cd "${srcdir}/${_name}"
+  cargo install --no-track --locked --all-features --root "${pkgdir}/usr" --path .
+  install -Dm600 "${srcdir}/systemd.service" "${pkgdir}/usr/lib/systemd/system/discord-google-cloud-engine-bot.service"
+  install -Dm600 "${srcdir}/env.sh" "${pkgdir}/etc/discord-google-cloud-engine-bot/env.sh"
+  install -Dm600 "${srcdir}/gce_key.json" "${pkgdir}/etc/discord-google-cloud-engine-bot/gce_key.json"
+}
+

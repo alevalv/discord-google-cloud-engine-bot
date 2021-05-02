@@ -1,0 +1,12 @@
+[Unit]
+Description=Discord bot for GCE
+After=network.target
+
+[Service]
+ExecStartPre=
+ExecStart=/bin/bash -c '\
+    source /etc/discord-google-cloud-engine-bot/env.sh; \
+   /usr/bin/discord-google-cloud-engine-bot'
+
+[Install]
+WantedBy=multi-user.target
